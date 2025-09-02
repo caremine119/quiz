@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>코칭 스타일 테스트</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background: #f9fafb;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 720px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    h1 {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .card {
+      padding: 20px;
+      border-radius: 16px;
+      background: #f3f4f6;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    }
+    .card:hover {
+      background: #6366f1;
+      color: #fff;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    }
+    .progress {
+      margin-top: 25px;
+      font-size: 14px;
+      text-align: right;
+      color: #6b7280;
+    }
+    .result {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 40px;
+      line-height: 1.6;
+    }
+    .restart {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #4f46e5;
+      color: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .restart:hover {
+      background: #4338ca;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>코칭 스타일 테스트</h1>
+    <div id="quiz"></div>
+    <div class="progress" id="progress"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // 질문 데이터
+    const questions = [
+      {
+        text: "현재 나의 가장 큰 관심사는 무엇인가요?",
+        options: [
+          { text: "삶을 균형 있게 설계", value: "life" },
+          { text: "사회생활 시작과 적응", value: "leadership" },
+          { text: "일과 리더십 동시에 성장", value: "career" },
+          { text: "AI로 강점 파악", value: "ai" }
+        ]
+      },
+      {
+        text: "나는 지금 어떤 단계에 있나요?",
+        options: [
+          { text: "나답게 살 길을 찾는 중", value: "life" },
+          { text: "사회생활 초입, 소통 고민", value: "leadership" },
+          { text: "성과와 성장 집중", value: "career" },
+          { text: "스스로 잘 모르겠음", value: "ai" }
+        ]
+      },
+      {
+        text: "나에게 가장 필요한 도움은?",
+        options: [
+          { text: "삶의 방향과 균형", value: "life" },
+          { text: "리더십과 소통 기본기", value: "leadership" },
+          { text: "커리어 성장과 성과", value: "career" },
+          { text: "강점 데이터와 분석", value: "ai" }
+        ]
+      },
+      {
+        text: "내가 지금 가장 두려운 것은?",
+        options: [
+          { text: "방향 없이 흘러가는 삶", value: "life" },
+          { text: "사회생활 적응 실패", value: "leadership" },
+          { text: "커리어 정체", value: "career" },
+          { text: "잠재력 활용 못함", value: "ai" }
+        ]
+      },
+      {
+        text: "이 코스를 통해 얻고 싶은 최종 목표는?",
+        options: [
+          { text: "나만의 삶의 로드맵", value: "life" },
+          { text: "기본기를 갖춘 사회인", value: "leadership" },
+          { text: "전문성과 리더십 강화", value: "career" },
+          { text: "나의 강점 데이터", value: "ai" }
+        ]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = { life: 0, leadership: 0, career: 0, ai: 0 };
+
+    // 질문 표시
+    function showQuestion() {
+      const quizDiv = document.getElementById("quiz");
+      const progressDiv = document.getElementById("progress");
+      quizDiv.innerHTML = "";
+      document.getElementById("result").innerHTML = "";
+
+      if (currentQuestion < questions.length) {
+        const q = questions[currentQuestion];
+        const qEl = document.createElement("div");
+        qEl.className = "question";
+        qEl.innerText = q.text;
+
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        q.options.forEach(opt => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerText = opt.text;
+          card.onclick = () => {
+            answers[opt.value]++;
+            currentQuestion++;
+            showQuestion();
+          };
+          optionsDiv.appendChild(card);
+        });
+
+        quizDiv.appendChild(qEl);
+        quizDiv.appendChild(optionsDiv);
+        progressDiv.innerText = `질문 ${currentQuestion + 1} / ${questions.length}`;
+      } else {
+        showResult();
+      }
+    }
+
+    // 결과 표시
+    function showResult() {
+      const quizDiv = document.getElementById("quiz");
+      const resultDiv = document.getElementById("result");
+      const progressDiv = document.getElementById("progress");
+
+      quizDiv.innerHTML = "";
+      progressDiv.innerHTML = "";
+
+      let best = Object.keys(answers).reduce((a, b) => answers[a] > answers[b] ? a : b);
+
+      let resultText = "";
+      if (best === "life") resultText = "✨ 당신에게 맞는 코스는 <br>[라이프코스]입니다!";
+      if (best === "leadership") resultText = "💡 당신에게 맞는 코스는 <br>[리더십코스]입니다!";
+      if (best === "career") resultText = "🚀 당신에게 맞는 코스는 <br>[커리어코스]입니다!";
+      if (best === "ai") resultText = "🤖 당신에게 맞는 코스는 <br>[AI 강점진단]입니다!";
+
+      resultDiv.innerHTML = resultText + 
+        `<div><span class="restart" onclick="restartQuiz()">다시 하기</span></div>`;
+    }
+
+    // 다시 시작
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = { life: 0, leadership: 0, career: 0, ai: 0 };
+      showQuestion();
+    }
+
+    // 시작
+    showQuestion();
+  </script>
+</body>
+</html>
